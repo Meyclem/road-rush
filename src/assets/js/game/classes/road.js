@@ -1,23 +1,23 @@
 import { Align } from './util/align'
+import { Collision } from './util/collision'
 
 export class Road extends Phaser.GameObjects.Container {
   constructor(config) {
     super(config.scene)
     this.scene = config.scene
-    this.game = this.scene.game
 
     this.back = this.scene.add.image(0, 0, 'road')
     this.add(this.back)
     this.scene.add.existing(this)
     
-    Align.scaleToGameW(this.back, this.game, 0.5)
-    this.setSize(this.back.displayWidth, this.game.config.height)
+    Align.scaleToGameW(this.back, 0.5)
+    this.setSize(this.back.displayWidth, game.config.height)
 
     this.lineGroup = this.scene.add.group()
     this.count = 0
 
-    this.car = this.scene.add.sprite(this.displayWidth / 4, this.game.config.height * 0.9, "cars")
-    Align.scaleToGameW(this.car, this.game, 0.10)
+    this.car = this.scene.add.sprite(this.displayWidth / 4, game.config.height * 0.9, "cars")
+    Align.scaleToGameW(this.car, 0.10)
     this.add(this.car)
 
     this.back.setInteractive()
@@ -35,7 +35,7 @@ export class Road extends Phaser.GameObjects.Container {
   }
 
   makeLines () {
-    this.vSpace = this.displayHeight / 10
+    this.vSpace = this.displayHeight / 8
 
     for (let i = 0; i < 20; i++) {
       const line = this.scene.add.image(this.x, this.vSpace * i, 'line')
@@ -85,13 +85,17 @@ export class Road extends Phaser.GameObjects.Container {
     this.object.speed = obj.speed
     const lane = Math.random() * 100
     if (lane > 50) { this.object.x = this.displayWidth / 4}
-    Align.scaleToGameW(this.object, this.game, obj.scale)
+    Align.scaleToGameW(this.object, obj.scale)
     this.add(this.object)
   }
 
   moveObject () {
     this.object.y += this.vSpace / this.object.speed
-    if (this.object.y > this.game.config.height + 100) {
+    if (Collision.checkCollide(this.car, this.object)) {
+      // TODO: car collision effect
+    }
+    if (this.object.y > game.config.height + 100) {
+      emitter.emit(G.UP_POINTS, 1)
       this.object.destroy()
       this.addObject()
     }

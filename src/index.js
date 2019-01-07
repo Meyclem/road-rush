@@ -2,13 +2,35 @@ import style from "./main.css"
 
 import 'phaser'
 import { SceneMain } from './assets/js/game/main'
+import { Model } from './assets/js/game/classes/models/model'
+import { Constants } from './assets/js/game/classes/constants'
 
-var config = {
+let isMobile = navigator.userAgent.indexOf('Mobile')
+if (isMobile === -1) { isMobile = navigator.userAgent.indexOf('Tablet') }
+
+let config
+
+if (isMobile === -1) {
+  config = {
+      type: Phaser.AUTO,
+      parent: 'game',
+      width: 480,
+      height: 640,
+      scene: [SceneMain]
+  } 
+} else {
+  config = {
     type: Phaser.AUTO,
     parent: 'game',
-    width: 480,
-    height: 640,
+    width: window.innerWidth,
+    height: window.innerHeight,
     scene: [SceneMain]
-};
+  } 
+}
 
-var game = new Phaser.Game(config)
+
+window.emitter = null
+window.controller = null
+window.model = new Model()
+window.G = new Constants()
+window.game = new Phaser.Game(config)
